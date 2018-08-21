@@ -1,0 +1,34 @@
+<div class="card mt-4 shadow">
+	<div class="card-header rounded-0" [ngClass]="'bg-' + post.theme">
+		<a href="" routerLink="/profile/{{post.ownerID}}"><img alt="image" class="profile-img-sm rounded-circle" src="assets/images/{{post.profileImage}}.jpg"></a>
+		<span class="ml-3 h5"><a routerLink="/profile/{{post.ownerID}}" class="link text-white" href="">{{ post.name }}</a></span>
+	</div>
+	<div class="card-body">
+		<p [ngStyle]="{ 'font-size' : fontSize +'px' ,'text-align' : align }" class="card-text post-body h5">{{ post.content }}</p>
+		<div class="d-flex justify-content-between py-2">
+			<small class="text-muted">{{ post.timeAgo }}</small>
+			<div>
+				<a class="like-icon" (click)="this.likeButtonClicked(post._id);"><i [ngClass]="{ 'liked' : liked===true }" class="text-{{ post.theme }} hov-scale fas fa-thumbs-up" ></i></a>
+				<span class="ml-3 badge badge-pill"  [ngClass]="'badge-' + post.theme">{{ post.likes.length }}</span>
+			</div>
+		</div>
+	</div>
+	<div>
+		<a href="{{ '#' + this.fakeID }}" class="d-block card-header py-3" data-toggle="collapse" role="button"><h6 class="m-0 font-weight-bold" [ngClass]="'text-' + post.theme">Comments</h6></a>
+		<div class="collapse" id="{{ this.fakeID }}">
+			<div class="card-body">
+				<form (submit)="this.postComment();" class="mb-2" action="" method="post"><div class="form-group"><input [(ngModel)]="this.comment" name="comment" type="text" class="rounded-pill form-control" placeholder="Leave a comment." autocomplete="off"></div></form>
+				<div class="comment-list">
+					<div *ngIf="post && !post.comments.length" class="text-center mt-2">Be the first to comment on this post!</div>
+					<div class="comment p-3 my-2 rounded" *ngFor="let comment of post.comments">
+						<div class="comment-user">
+							<a href="" routerLink="/profile/{{comment.id}}"><img alt="image" src="assets/images/{{comment.profileImage}}.jpg" class="rounded-circle profile-img-sm"></a>
+							<span class="ml-2"><a href="" routerLink="/profile/{{comment.id}}" class="link">{{comment.name}}</a></span>
+						</div>
+						<div class="comment-body pl-3 mt-2">{{comment.content}}</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,85 @@
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+	<button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3"><i class="fa fa-bars"></i></button>
+	<form (ngSubmit)="searchForFriends()" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+		<div class="input-group">
+			<input name="query" [(ngModel)]="this.query" type="text" class="form-control bg-light border-0 small" placeholder="Find Friends" aria-label="Search" aria-describedby="basic-addon2" autocomplete="off">
+			<div class="input-group-append"><button class="btn btn-primary" type="submit"><i class="fas fa-search fa-sm"></i></button></div>
+		</div>
+	</form>
+	<ul class="navbar-nav ml-auto">
+		<li class="nav-item dropdown no-arrow d-sm-none">
+			<a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<i class="fas fa-search fa-fw"></i>
+			</a>
+			<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+				<form (ngSubmit)="searchForFriends();"  class="form-inline mr-auto w-100 navbar-search">
+					<div class="input-group">
+						<input name="query" [(ngModel)]="this.query" type="text" class="form-control bg-light border-0 small" placeholder="Find Friends" aria-label="Search" aria-describedby="basic-addon2" autocomplete="off">
+						<div class="input-group-append"><button class="btn btn-primary" type="submit"><i class="fas fa-search fa-sm"></i></button></div>
+					</div>
+				</form>
+			</div>
+		</li>
+		<li class="nav-item dropdown no-arrow mx-1"><a class="nav-link dropdown-toggle" routerLink="/friend-requests"><i class="fas fa-users"></i><span class="badge badge-danger badge-counter" *ngIf="this.notifications.friendRequests">{{ this.notifications.friendRequests }}</span></a></li>
+		<li class="nav-item dropdown no-arrow mx-1">
+			<a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" (click)="resetAlertNotifications();"><i class="fas fa-bell fa-fw"></i><span class="badge badge-danger badge-counter" *ngIf="this.notifications.alerts ">{{ this.notifications.alerts }}</span></a>
+			<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
+				<h6 class="dropdown-header">Alerts Center</h6>
+				<div class="custom-scroll limit-h">
+					<a *ngFor="let alertE of alertsArray" class="dropdown-item d-flex align-items-center" routerLink="{{alertE.href}}">
+						<div class="mr-3"><div class="icon-circle {{alertE.bgColor}}"><i class="fas {{alertE.icon}} text-white"></i></div></div>
+						<div><span class="font-weight-bold">{{ alertE.text }}</span></div>
+					</a>
+				</div>
+				<br>
+			</div>
+		</li>
+		<li class="nav-item dropdown no-arrow mx-1">
+			<a class="nav-link dropdown-toggle" href="" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  (click)="resetMessageNotifications();">
+				<i class="fas fa-envelope fa-fw"></i><span class="badge badge-danger badge-counter" *ngIf="this.notifications.messages">{{ this.notifications.messages }}</span>
+			</a>
+			<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
+				<h6 class="dropdown-header">Message Center</h6>
+				<div class="custom-scroll limit-h">
+					<a *ngFor="let mPreview of messagePreview" class="dropdown-item d-flex align-items-center" (click)="messageLink(mPreview.messengerID)" style="cursor: pointer">
+						<div class="dropdown-list-image mr-3"><img class="rounded-circle" src="assets/images/{{mPreview.messengerImage}}.jpg" alt=""><div *ngIf="mPreview.isNew " class="new badge badge-counter badge-success">NEW</div></div>
+						<div class="font-weight-700"><div class="text-truncate">{{ mPreview.messageContent }}</div><div class="small text-primary">{{ mPreview.messengerName }}</div></div>
+					</a>
+					<a class="dropdown-item text-center small text-gray-500" href="" routerLink="/message">Read More Messages</a>
+				</div>
+			</div>
+		</li>
+		<div class="topbar-divider d-none d-sm-block"></div>
+		<li class="nav-item dropdown no-arrow">
+			<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ userName }}</span>
+				<img class="img-profile rounded-circle" src="assets/images/{{ this.profilePicture }}.jpg" alt="image">
+			</a>
+			<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+				<a class="dropdown-item" href="" routerLink="/profile/{{ this.userID }}"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>Profile</a>
+				<a class="dropdown-item" href="" routerLink="/feed"><i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>Feed</a>
+				<a class="dropdown-item" href="" routerLink="/message"><i class="fas fa-envelope fa-sm fa-fw mr-2 text-gray-400"></i>Messages</a>
+				<div class="dropdown-divider"></div>
+				<a (click)="this.auth.logOut();" class="dropdown-item" data-toggle="modal" data-target="#logoutModal" href=""><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>Sign Out</a>
+			</div>
+		</li>
+	</ul>
+</nav>
+<div class="mx-4 alert alert-primary text-primary mb-4" *ngIf="this.alertMessage">{{ this.alertMessage }}</div>
+<div class="modal fade p-0" id="staticBackdrop" data-backdrop="static" tabindex="-1" role="dialog">
+	<div class="modal-dialog w-100 mx-auto" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="staticBackdropLabel">Send Message to {{ sendMessageObject.name }}</h5>
+				<button type="button" class="close" data-dismiss="modal">
+					<span>&times;</span>
+				</button>
+			</div>
+			<div class="modal-body"><form class="" action="index.html" method="post" id="send-message"><textarea [(ngModel)]="sendMessageObject.content" name="name" placeholder="Your message..." rows="6" class="w-100" required></textarea></form></div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Never mind</button>
+				<button type="submit" class="btn btn-primary" form="send-message" (click)="sendMessage();" data-dismiss="modal">Send Message</button>
+			</div>
+		</div>
+	</div>
+</div>
